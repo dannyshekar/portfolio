@@ -1,0 +1,77 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, description, tech, status, repo, demo } = project.data;
+---
+
+<article class="card">
+  <div class="top">
+    <span class={`status ${status}`}>● {status}</span>
+    <span class="links">
+      {repo && <a href={repo}>Code ↗</a>}
+      {demo && <a href={demo}>Live ↗</a>}
+    </span>
+  </div>
+  <h3><a href={`/projects/${project.id}`}>{title}</a></h3>
+  <p class="muted">{description}</p>
+  <div class="tech">
+    {tech.map((t) => <span class="pill">{t}</span>)}
+  </div>
+</article>
+
+<style>
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.2rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    transition:
+      border-color 0.15s,
+      transform 0.15s;
+  }
+  .card:hover {
+    border-color: #7ee78766;
+    transform: translateY(-2px);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
+  .links {
+    display: flex;
+    gap: 0.8rem;
+  }
+  .status.building {
+    color: var(--amber);
+  }
+  .status.shipped {
+    color: var(--accent);
+  }
+  .status.paused {
+    color: var(--muted);
+  }
+  h3 {
+    margin: 0.5rem 0 0.3rem;
+  }
+  h3 a {
+    color: #eef2f8;
+  }
+  p {
+    font-size: 0.85rem;
+    margin: 0 0 1rem;
+    flex: 1;
+  }
+  .tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import Timeline from '../components/Timeline.astro';
+import SkillMatrix from '../components/SkillMatrix.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { SITE } from '../site.config';
+import { getExperience } from '../utils';
+
+const work = await getExperience('work');
+const education = await getExperience('education');
+---
+
+<Base title="Experience" description={`Work history and education of ${SITE.name}.`}>
+  <p class="eyebrow">Career</p>
+  <h1>Experience</h1>
+  <p class="lede">
+    Software engineering in Bengaluru, now security in Melbourne. Here's the full picture.
+  </p>
+
+  <div class="spacer"></div>
+  <Timeline entries={work} full />
+
+  <SectionHead title="Education" />
+  <Timeline entries={education} full />
+
+  <SectionHead title="Skills matrix" />
+  <SkillMatrix />
+
+  <p class="cta">
+    Like what you see? Connect with me on
+    {SITE.socials.map((s, i) => <>{i > 0 && ', '}<a href={s.href}>{s.label}</a></>)}
+    {SITE.email && <> or email <a href={`mailto:${SITE.email}`}>{SITE.email}</a></>}.
+  </p>
+</Base>
+
+<style>
+  .lede {
+    color: var(--muted);
+    max-width: 60ch;
+    font-size: 1.05rem;
+  }
+  .spacer {
+    height: 1.5rem;
+  }
+  .cta {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+  }
+</style>

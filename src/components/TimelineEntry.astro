@@ -1,0 +1,252 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import { formatRange, isOngoing } from '../utils';
+
+interface Props {
+  entry: CollectionEntry<'experience'>;
+  full: boolean;
+}
+
+const { entry, full } = Astro.props;
+const { role, org, location, start, end, summary, terms, tech } = entry.data;
+const current = isOngoing(end);
+const { Content } = full ? await render(entry) : { Content: null };
+---
+
+<li class:list={['entry', { current }]}>
+  <span class="node" aria-hidden="true"></span>
+  <div class="top">
+    <div>
+      <h3>{role}</h3>
+      <p class="org">
+        {org}
+        {full && location && <span class="loc"> · {location}</span>}
+      </p>
+    </div>
+    <p class="date">
+      {current && <span class="badge">Current</span>}
+      {formatRange(start, end)}
+    </p>
+  </div>
+  {summary && <p class="summary">{summary}</p>}
+  {
+    terms.length > 0 && (
+      <details class="coursework">
+        <summary>
+          <span class="chev" aria-hidden="true">›</span>
+          Coursework
+          <span class="count">
+            {terms.length} semesters · {terms.reduce((n, t) => n + t.units.length, 0)} units
+          </span>
+        </summary>
+        <div class="terms">
+          {terms.map((t) => (
+            <div class="term">
+              <h4>{t.term}</h4>
+              <ul>
+                {t.units.map((u) => (
+                  <li>{u}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </details>
+    )
+  }
+  {
+    full && Content && (
+      <div class="prose details">
+        <Content />
+      </div>
+    )
+  }
+  {
+    full && tech.length > 0 && (
+      <div class="tech">
+        {tech.map((t) => (
+          <span class="pill">{t}</span>
+        ))}
+      </div>
+    )
+  }
+</li>
+
+<style>
+  .entry {
+    position: relative;
+    padding: 0 0 2.2rem 2rem;
+  }
+  /* the vertical line */
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0.7rem;
+    bottom: -0.5rem;
+    width: 2px;
+    background: var(--border);
+  }
+  .entry:last-child {
+    padding-bottom: 0;
+  }
+  .entry:last-child::before {
+    display: none;
+  }
+  .node {
+    position: absolute;
+    left: 0;
+    top: 0.45rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--muted);
+  }
+  .current .node {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px #7ee78722;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.3rem 1.5rem;
+    flex-wrap: wrap;
+  }
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .org {
+    margin: 0.1rem 0 0;
+    color: var(--cyan);
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+  .loc {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .date {
+    margin: 0.2rem 0 0;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .badge {
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    border: 1px solid #7ee78755;
+    background: #7ee78714;
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+  }
+  .summary {
+    max-width: 80ch;
+    margin: 0.5rem 0 0;
+    font-size: 0.93rem;
+    color: var(--text);
+  }
+  .coursework {
+    margin-top: 0.7rem;
+  }
+  .coursework summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    list-style: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--heading);
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    user-select: none;
+    white-space: nowrap;
+    transition: border-color 0.15s;
+  }
+  .coursework summary::-webkit-details-marker {
+    display: none;
+  }
+  .coursework summary:hover {
+    border-color: var(--accent);
+  }
+  .chev {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: transform 0.2s;
+  }
+  .coursework[open] .chev {
+    transform: rotate(90deg);
+  }
+  .count {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .terms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+  }
+  .term {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 0.9rem;
+  }
+  h4 {
+    margin: 0 0 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+  .term ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .term li {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    padding: 0.25rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .term li:first-child {
+    border-top: 0;
+  }
+  .details {
+    margin-top: 0.6rem;
+    font-size: 0.92rem;
+  }
+  .details :global(ul) {
+    margin: 0;
+  }
+  .details :global(li) {
+    margin-bottom: 0.35rem;
+  }
+  .tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.8rem;
+  }
+</style>

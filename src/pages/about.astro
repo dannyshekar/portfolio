@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { SITE } from '../site.config';
+---
+
+<Base title="About" description={`About ${SITE.name}.`}>
+  <p class="eyebrow">Hello</p>
+  <h1>About</h1>
+
+  <div class="prose">
+    <p>
+      Hi, I'm <strong>{SITE.fullName}</strong>, a cybersecurity student in Melbourne who used to be a
+      software engineer.
+    </p>
+    <p>
+      I started out building software. At Torry Harris in Bengaluru I built Spring Boot microservices from
+      scratch, wrote the tests that kept them honest, and put together GenAI prototypes on LangChain with
+      OpenAI, Mistral and Llama. That gave me a builder's view of how modern applications fit together,
+      and of all the places where they come apart.
+    </p>
+    <p>
+      That second part is what pulled me into security. In 2025 I moved to Melbourne to do a Master's in
+      Cyber Security at RMIT, focusing on attack analysis, incident response, cryptography and privacy in
+      machine learning. Outside class I practise on HackTheBox and in my own SIEM home lab, and I'm
+      studying for CompTIA Security+. I'm also a DevSecOps intern at XSPECTRE, auditing
+      access control and fixing pipelines.
+    </p>
+
+    <!--
+      ✏️ Make this yours. A short paragraph about you outside work: what you do on weekends,
+      what got you into computers, a weird fact. That's what makes people remember you.
+    -->
+
+    <h2>What I'm looking for</h2>
+    <p>
+      Graduate or entry-level blue team roles in Australia: <strong>SOC Analyst</strong>,
+      <strong>DFIR Analyst</strong>, <strong>Threat Hunter</strong> or <strong>Detection Engineer</strong>,
+      starting December 2026 or early 2027.
+    </p>
+    <blockquote>{SITE.closing}</blockquote>
+  </div>
+
+  <SectionHead title="Get in touch" />
+  <ul class="contact">
+    {SITE.email && <li><span>email</span><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>}
+    {
+      SITE.socials.map((s) => (
+        <li>
+          <span>{s.label.toLowerCase()}</span>
+          <a href={s.href}>{s.href.replace(/^https?:\/\/(www\.)?/, '')}</a>
+        </li>
+      ))
+    }
+    <li><span>based</span>{SITE.location}</li>
+  </ul>
+</Base>
+
+<style>
+  .prose {
+    max-width: 64ch;
+  }
+  .prose strong {
+    color: #eef2f8;
+  }
+  .contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .contact li {
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    padding: 0.25rem 0;
+    overflow-wrap: anywhere;
+  }
+  .contact span {
+    color: var(--accent);
+  }
+</style>

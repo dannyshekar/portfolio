@@ -1,0 +1,31 @@
+---
+// A mailto: link that also copies the address, because mailto does nothing
+// for visitors without a desktop email app (e.g. Gmail-in-the-browser users).
+interface Props {
+  email: string;
+  label?: string;
+  primary?: boolean;
+}
+
+const { email, label = 'Email me', primary = false } = Astro.props;
+---
+
+<a class:list={['btn', 'email-btn', { primary }]} href={`mailto:${email}`} data-email={email}>
+  <span class="label">{label}</span>
+</a>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('.email-btn').forEach((btn) => {
+    const label = btn.querySelector('.label')!;
+    const original = label.textContent;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.email!);
+        label.textContent = 'Copied to clipboard ✓';
+        setTimeout(() => (label.textContent = original), 2200);
+      } catch {
+        // Clipboard blocked: the mailto link still does its thing.
+      }
+    });
+  });
+</script>

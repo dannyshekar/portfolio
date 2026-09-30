@@ -1,0 +1,107 @@
+---
+import { SITE } from '../site.config';
+---
+
+<div class="matrix" role="list">
+  {
+    SITE.skills.map((col) => (
+      <section class="col" role="listitem">
+        <header>
+          <h3>{col.tactic}</h3>
+          <span class="count">{col.items.length} techniques</span>
+        </header>
+        <ul>
+          {col.items.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<p class="progress">
+  <span class="label">In progress:</span>
+  {SITE.inProgress.map((item) => <span class="pill">{item}</span>)}
+</p>
+
+<style>
+  .matrix,
+  .progress {
+    font-family: var(--mono);
+  }
+  .matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 0.5rem;
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  header {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    border-radius: 4px;
+    padding: 0.5rem 0.6rem;
+  }
+  .col:nth-child(n + 3) header {
+    border-top-color: var(--cyan);
+  }
+  .col:nth-child(5) header {
+    border-top-color: var(--pink);
+  }
+  h3 {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+  }
+  .count {
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  li {
+    font-size: 0.76rem;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    transition:
+      border-color 0.15s,
+      color 0.15s;
+  }
+  li:hover {
+    border-color: var(--accent);
+    color: #eef2f8;
+  }
+  .progress {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 1rem 0 0;
+    font-size: 0.8rem;
+  }
+  .label {
+    color: var(--amber);
+    margin-right: 0.2rem;
+  }
+  .progress .pill {
+    border-style: dashed;
+  }
+  @media (max-width: 520px) {
+    .matrix {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

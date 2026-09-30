@@ -1,0 +1,33 @@
+---
+interface Props {
+  title: string;
+  link?: { href: string; label: string };
+}
+
+const { title, link } = Astro.props;
+---
+
+<header class="head">
+  <h2>{title}</h2>
+  {link && <a href={link.href}>{link.label} →</a>}
+</header>
+
+<style>
+  .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 5rem 0 1.5rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 {
+    margin: 0;
+    font-size: 1.6rem;
+  }
+  a {
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+</style>

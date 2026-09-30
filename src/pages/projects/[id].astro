@@ -1,0 +1,66 @@
+---
+import { render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { getProjects, formatDate } from '../../utils';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { title, description, date, tech, status, repo, demo, cover } = project.data;
+const { Content } = await render(project);
+---
+
+<Base title={title} description={description}>
+  <a href="/projects" class="back">← All projects</a>
+  <h1>{title}</h1>
+  <p class="muted">{description}</p>
+
+  <dl class="meta">
+    <dt>Status</dt><dd>{status[0].toUpperCase() + status.slice(1)}</dd>
+    <dt>Started</dt><dd>{formatDate(date)}</dd>
+    <dt>Stack</dt><dd>{tech.join(', ')}</dd>
+    {repo && (<><dt>Code</dt><dd><a href={repo}>{repo.replace(/^https?:\/\//, '')}</a></dd></>)}
+    {demo && (<><dt>Live</dt><dd><a href={demo}>{demo.replace(/^https?:\/\//, '')}</a></dd></>)}
+  </dl>
+
+  {cover && <Image src={cover} alt={`Screenshot of ${title}`} class="cover" />}
+
+  <div class="prose">
+    <Content />
+  </div>
+</Base>
+
+<style>
+  .back {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.2rem 1.2rem;
+    font-size: 0.85rem;
+    padding: 1rem 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 1.5rem 0 2rem;
+  }
+  dt {
+    color: var(--accent);
+  }
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .cover {
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+</style>

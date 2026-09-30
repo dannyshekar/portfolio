@@ -1,0 +1,60 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import { formatDate, slugifyTag } from '../utils';
+
+interface Props {
+  note: CollectionEntry<'notes'>;
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+---
+
+<article class="note" id={note.id}>
+  <header>
+    <time datetime={note.data.date.toISOString()}>{formatDate(note.data.date)}</time>
+    <h3>
+      <a href={`/notes#${note.id}`}>{note.data.title}</a>
+      {note.data.draft && <span class="pill">draft</span>}
+    </h3>
+  </header>
+  <div class="prose">
+    <Content />
+  </div>
+  <div>
+    {note.data.tags.map((t) => <a href={`/tags/${slugifyTag(t)}`} class="tag">{t}</a>)}
+  </div>
+</article>
+
+<style>
+  .note {
+    border-left: 2px solid var(--border);
+    padding: 0 0 0 1.2rem;
+    margin: 0 0 2.2rem;
+    position: relative;
+  }
+  .note::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 0.45rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  time {
+    font-size: 0.78rem;
+    color: var(--faint);
+  }
+  h3 {
+    margin: 0.1rem 0 0.3rem;
+  }
+  h3 a {
+    color: #eef2f8;
+  }
+  .prose :global(p:first-child) {
+    margin-top: 0;
+  }
+</style>

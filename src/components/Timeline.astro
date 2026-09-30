@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import TimelineEntry from './TimelineEntry.astro';
+
+interface Props {
+  entries: CollectionEntry<'experience'>[];
+  full?: boolean; // full = show bullet points and tech; otherwise a compact summary
+}
+
+const { entries, full = false } = Astro.props;
+---
+
+<ol class="timeline">
+  {entries.map((entry) => <TimelineEntry entry={entry} full={full} />)}
+</ol>
+
+<style>
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

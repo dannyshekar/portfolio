@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import Note from '../../components/Note.astro';
+import { getPosts, getNotes, slugifyTag } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const notes = await getNotes();
+  const tags = new Map<string, string>(); // slug → display name
+  for (const entry of [...posts, ...notes]) {
+    for (const t of entry.data.tags) tags.set(slugifyTag(t), t);
+  }
+  return [...tags].map(([slug, name]) => ({
+    params: { tag: slug },
+    props: {
+      name,
+      posts: posts.filter((p) => p.data.tags.some((t) => slugifyTag(t) === slug)),
+      notes: notes.filter((n) => n.data.tags.some((t) => slugifyTag(t) === slug)),
+    },
+  }));
+}
+
+const { name, posts, notes } = Astro.props;
+---
+
+<Base title={`#${name}`} description={`Everything tagged ${name}.`}>
+  <h1><span class="muted">#</span>{name}</h1>
+  {
+    posts.length > 0 && (
+      <>
+        <h2>Posts</h2>
+        <PostList posts={posts} />
+      </>
+    )
+  }
+  {
+    notes.length > 0 && (
+      <>
+        <h2>Notes</h2>
+        {notes.map((note) => <Note note={note} />)}
+      </>
+    )
+  }
+</Base>

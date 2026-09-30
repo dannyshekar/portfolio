@@ -1,0 +1,72 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { getPosts, formatDate, readingTime, slugifyTag } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { id: post.id },
+    // posts are newest-first, so the "next" (newer) post is the one before it
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+
+const { post, newer, older } = Astro.props;
+const { title, description, date, updated, tags } = post.data;
+const { Content } = await render(post);
+---
+
+<Base title={title} description={description}>
+  <a href="/blog" class="back">← All posts</a>
+  <article>
+    <header>
+      <p class="meta">
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        {updated && <span> · updated {formatDate(updated)}</span>}
+        <span> · {readingTime(post.body)}</span>
+      </p>
+      <h1>{title}</h1>
+      <div>{tags.map((t) => <a href={`/tags/${slugifyTag(t)}`} class="tag">{t}</a>)}</div>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  <nav class="pager">
+    {older ? <a href={`/blog/${older.id}`}>← {older.data.title}</a> : <span />}
+    {newer && <a href={`/blog/${newer.id}`} class="right">{newer.data.title} →</a>}
+  </nav>
+</Base>
+
+<style>
+  .back {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+  .meta {
+    font-size: 0.8rem;
+    color: var(--faint);
+    margin: 0 0 0.4rem;
+  }
+  header {
+    padding-bottom: 1.2rem;
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 1.5rem;
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border);
+    font-size: 0.85rem;
+  }
+  .right {
+    text-align: right;
+  }
+</style>

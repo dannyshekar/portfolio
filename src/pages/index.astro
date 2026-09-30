@@ -1,0 +1,278 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Timeline from '../components/Timeline.astro';
+import SkillMatrix from '../components/SkillMatrix.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import PostList from '../components/PostList.astro';
+import EmailButton from '../components/EmailButton.astro';
+import { SITE } from '../site.config';
+import { getPosts, getProjects, getNotes, getExperience, formatDate } from '../utils';
+
+const work = await getExperience('work');
+const education = await getExperience('education');
+const projects = await getProjects();
+const featured = projects.filter((p) => p.data.featured);
+const showcase = (featured.length ? featured : projects).slice(0, 4);
+const posts = (await getPosts()).slice(0, 4);
+const notes = (await getNotes()).slice(0, 3);
+const { hero } = SITE;
+---
+
+<Base>
+  <!-- ── Hero ─────────────────────────────────────── -->
+  <section class="hero">
+    <p class="eyebrow">Cybersecurity · {SITE.location}</p>
+    <h1>{SITE.name}</h1>
+    <p class="position">{hero.position}</p>
+    <p class="intro">{hero.intro}</p>
+
+    <dl class="status">
+      {
+        SITE.status.map((s) => (
+          <div>
+            <dt>{s.key}</dt>
+            <dd>
+              {s.live && <span class="live" aria-hidden="true" />}
+              {s.value}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <div class="ctas">
+      <a class="btn primary" href="/experience">View experience</a>
+      {SITE.socials.map((s) => <a class="btn" href={s.href}>{s.label} ↗</a>)}
+      {SITE.email && <EmailButton email={SITE.email} />}
+    </div>
+  </section>
+
+  <!-- ── Pitch ────────────────────────────────────── -->
+  <SectionHead title="An engineer on the blue team" />
+  <div class="pitch">
+    {
+      SITE.pitch.map((p, i) => (
+        <article>
+          <span class="num">0{i + 1}</span>
+          <h3>{p.title}</h3>
+          <p>{p.body}</p>
+        </article>
+      ))
+    }
+  </div>
+
+  <!-- ── Experience & education ───────────────────── -->
+  <SectionHead title="Experience" link={{ href: '/experience', label: 'Full details' }} />
+  <Timeline entries={work} />
+
+  <SectionHead title="Education" />
+  <Timeline entries={education} />
+
+  <!-- ── Skills ───────────────────────────────────── -->
+  <SectionHead title="Skills matrix" />
+  <SkillMatrix />
+
+  <!-- ── Projects ─────────────────────────────────── -->
+  {
+    showcase.length > 0 && (
+      <>
+        <SectionHead title="Projects" link={{ href: '/projects', label: 'All projects' }} />
+        <ProjectGrid projects={showcase} />
+      </>
+    )
+  }
+
+  <!-- ── Writing ──────────────────────────────────── -->
+  {
+    posts.length > 0 && (
+      <>
+        <SectionHead title="Writing" link={{ href: '/blog', label: 'All posts' }} />
+        <PostList posts={posts} />
+      </>
+    )
+  }
+  {
+    notes.length > 0 && (
+      <>
+        <SectionHead title="Learning log" link={{ href: '/notes', label: 'All notes' }} />
+        <ul class="notes">
+          {notes.map((note) => (
+            <li>
+              <span class="date">{formatDate(note.data.date)}</span>
+              <a href={`/notes#${note.id}`}>{note.data.title}</a>
+            </li>
+          ))}
+        </ul>
+      </>
+    )
+  }
+
+  <!-- ── Closing ──────────────────────────────────── -->
+  <section class="closing">
+    <p class="eyebrow">Get in touch</p>
+    <p class="quote">{SITE.closing}</p>
+    <div class="ctas">
+      {SITE.email && <EmailButton email={SITE.email} label={SITE.email} primary />}
+      {SITE.socials.map((s) => <a class="btn" href={s.href}>{s.label} ↗</a>)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ── hero ── */
+  .hero {
+    position: relative;
+    padding: 2.5rem 0 1rem;
+  }
+  /* soft glow behind the name */
+  .hero::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: -6rem;
+    left: -10rem;
+    width: 34rem;
+    height: 24rem;
+    background: radial-gradient(closest-side, #7ee78714, transparent);
+    pointer-events: none;
+  }
+  h1 {
+    font-size: clamp(2.6rem, 8.5vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin: 0 0 1rem;
+  }
+  .position {
+    font-family: var(--display);
+    font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+    font-weight: 500;
+    color: var(--heading);
+    margin: 0 0 1.4rem;
+  }
+  .intro {
+    max-width: 72ch;
+    margin: 0 0 2rem;
+    font-size: 1.02rem;
+  }
+
+  .status {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    margin: 0 0 1.8rem;
+    overflow: hidden;
+  }
+  .status div {
+    padding: 0.8rem 1rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 -1px -1px 0;
+  }
+  dt {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--faint);
+  }
+  dd {
+    margin: 0.2rem 0 0;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--heading);
+  }
+  .live {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-right: 0.45rem;
+    animation: pulse 2s infinite;
+    vertical-align: 1px;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 #7ee78799; }
+    70% { box-shadow: 0 0 0 7px #7ee78700; }
+    100% { box-shadow: 0 0 0 0 #7ee78700; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .live { animation: none; }
+  }
+  .ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  /* ── pitch ── */
+  .pitch {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .pitch article {
+    padding: 1.2rem 1.3rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .num {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--accent);
+  }
+  .pitch h3 {
+    margin: 0.2rem 0 0.4rem;
+  }
+  .pitch p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── notes ── */
+  .notes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .notes li {
+    display: flex;
+    gap: 1rem;
+    padding: 0.35rem 0;
+  }
+  .notes .date {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--faint);
+    padding-top: 0.15rem;
+  }
+  .notes a {
+    color: var(--text);
+  }
+  .notes a:hover {
+    color: var(--accent);
+  }
+
+  /* ── closing ── */
+  .closing {
+    margin-top: 5rem;
+    padding: 2rem 1.6rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #7ee78710, transparent 60%), var(--surface);
+  }
+  .quote {
+    font-family: var(--display);
+    font-size: clamp(1.15rem, 3vw, 1.45rem);
+    line-height: 1.45;
+    color: var(--heading);
+    margin: 0.4rem 0 1.4rem;
+  }
+</style>
