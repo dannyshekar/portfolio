@@ -106,6 +106,10 @@ main {
   color: var(--muted);
 }
 
+.spacer {
+  height: 2rem;
+}
+
 /* small uppercase label, e.g. above a page title */
 .eyebrow {
   font-family: var(--mono);
@@ -209,6 +213,48 @@ main {
   font-size: 0.85rem;
   line-height: 1.6;
 }
+/* Code highlighting (Prism tokens) */
+.prose pre[class*='language-'] {
+  background: var(--surface);
+  color: var(--text);
+}
+.token.comment,
+.token.prolog,
+.token.doctype {
+  color: var(--faint);
+  font-style: italic;
+}
+.token.keyword,
+.token.selector,
+.token.important,
+.token.atrule {
+  color: var(--pink);
+}
+.token.string,
+.token.char,
+.token.attr-value,
+.token.inserted {
+  color: var(--accent);
+}
+.token.function,
+.token.class-name {
+  color: var(--cyan);
+}
+.token.number,
+.token.boolean,
+.token.constant,
+.token.property,
+.token.key {
+  color: var(--amber);
+}
+.token.punctuation,
+.token.operator {
+  color: var(--muted);
+}
+.token.deleted {
+  color: #ff6b6b;
+}
+
 .prose blockquote {
   margin: 1.5rem 0;
   padding: 0.25rem 1rem;

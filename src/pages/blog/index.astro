@@ -11,6 +11,6 @@ const posts = await getPosts();
   <p class="muted">
     Longer write-ups about what I'm building and learning. Subscribe via <a href="/rss.xml">RSS</a>.
   </p>
-  <div style="height: 2rem"></div>
+  <div class="spacer"></div>
   {posts.length ? <PostList posts={posts} /> : <p class="muted">First post is being written.</p>}
 </Base>
