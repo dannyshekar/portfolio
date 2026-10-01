@@ -15,14 +15,14 @@ It holds credentials. It reaches production. It executes code without a human ap
 
 So I've started designing pipelines the way you'd onboard a privileged user:
 
-- **Least privilege** — what is the smallest set of permissions that still lets this run? Not "what's convenient."
-- **Separate identities per environment**, so staging can't reach anything production owns.
+- **Least privilege** - What is the smallest set of permissions that still lets this run? Not "what's convenient."
+- **Separate identities per environment** - So staging can't reach anything production owns.
 - **Short-lived credentials** over standing ones wherever the tooling allows it.
-- **Pinned versions**, so what the build pulls in today is what it pulled in yesterday.
-- **Treat the pipeline config itself as protected** — changing *how* you deploy is as sensitive as changing *what* you deploy.
+- **Pinned versions** - So what the build pulls in today is what it pulled in yesterday.
+- **Treat the pipeline config itself as protected** - Changing *how* you deploy is as sensitive as changing *what* you deploy.
 
 None of that is exotic. It's just applying identity and access principles to a machine instead of a person.
 
 ## The takeaway
 
-> Automation doesn't remove trust from a system. It concentrates it into one place — and that place deserves the same scrutiny you'd give any account with production access.
+> Automation doesn't remove trust from a system. It concentrates it into one place - and that place deserves the same scrutiny you'd give any account with production access.
